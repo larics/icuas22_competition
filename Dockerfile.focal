@@ -12,9 +12,9 @@ RUN apt-get update && apt-get install -q -y \
 WORKDIR $HOME/$CATKIN_WORKSPACE/src
 RUN git clone https://github.com/larics/larics_gazebo_worlds.git
 
-# Step 3: Build the Catkin workspace
-RUN catkin build --limit-status-rate 0.2
-
-# Step 4: Create the icuas22_competition package and copy its contents
+# Step 3: Create the icuas22_competition package and copy its contents
 WORKDIR $HOME/$CATKIN_WORKSPACE/src/icuas22_competition
 COPY . .
+
+# Step 4: Build the Catkin workspace
+RUN catkin build --limit-status-rate 0.2
