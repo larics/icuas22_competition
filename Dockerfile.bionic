@@ -8,10 +8,13 @@ ARG USER=root
 RUN apt-get update && apt-get install -q -y \
     vim
 
-# Step 2: Go to the Catkin workspace and install all needed ROS packages
+# Step 2: Go to the Catkin workspace and clone all needed ROS packages
 WORKDIR $HOME/$CATKIN_WORKSPACE/src
 RUN git clone https://github.com/larics/larics_gazebo_worlds.git
 
-# Step 3: Create the icuas22_competition package and copy its contents
+# Step 3: Build the Catkin workspace
+RUN catkin build --limit-status-rate 0.2
+
+# Step 4: Create the icuas22_competition package and copy its contents
 WORKDIR $HOME/$CATKIN_WORKSPACE/src/icuas22_competition
 COPY . .
