@@ -1,4 +1,4 @@
-name: icuas_ch1
+name: icuas_ch
 root: ./
 startup_window: roscore
 pre_window: export UAV_NAMESPACE=red
@@ -16,7 +16,7 @@ windows:
       layout: tiled
       panes:
         - waitForRos; roslaunch ardupilot_gazebo kopterworx.launch use_sim_time:=true
-        - # Setup CH1 in gazebo here...
+        - # Setup Challenge in gazebo here...
   - arm&takeof:
       layout: tiled
       panes:
@@ -30,4 +30,4 @@ windows:
   - solution:
       layout: tiled
       panes:
-        - # Launch your CH1 solution here
+        - # Launch your Challenge solution here
