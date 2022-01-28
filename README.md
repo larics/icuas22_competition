@@ -21,32 +21,34 @@ Alternatively, to build the ICUAS2022 Competition solution image please execute 
 ./docker_build.sh
 ```
 
+Additional arguments:
+* ```--focal``` - Build Docker image for Focal distro
+* ```--bionic``` - Build Docker image for Bionic distra (default)
+* ```--build-args``` - Append additional Docker build arguments, e.g. --no-cache
+
 ## Startup
 
-To automatically start and setup challenges navigate to the one of the three folders in ```startup``` and run:
+To automatically start and setup the challenge navigate to ```startup/challenge``` and run:
 ```
 ./start.sh
 ```
-This should automatically setup and start the respective challenge, as well as run your code.
+This should automatically setup and start the challenge, as well as run your code.
 
-* Commands that run your challenge solution (rosrun, roslaunch etc.) should be placed in the respective ```session.yml``` file.
-* Software configuration specific for each challenge should be placed in the respective ```custom_config``` folders.
+* Commands that run your challenge solution (rosrun, roslaunch etc.) should be placed in the ```session.yml``` file.
+* Software configuration specific to the challenge should be placed in the ```custom_config``` folder.
 
 *NOTE* If you are unfamiliar with the Docker or Tmux commands please check out this [quick-start guide](https://github.com/larics/uav_ros_simulation/blob/main/HOWTO.md).
 
-*NOTE* If you chose to run the challenge inside the docker environment, please run the container first using:
+*NOTE* If you choose to run the challenge inside the docker environment, please run the container first using:
 ```
 ./docker_run.sh
 ```
 
-## Challenge 1
+Additional arguments:
+* ```--focal``` - Run Focal distro container
+* ```--bionic``` - Run Bionic distro container
+* ```--run-args``` - Append additional Docker run arguments, e.g. --rm
+
+## Challenge
 
 TODO: Describe challenge 1, add some pictures, etc.
-
-## Challenge 2
-
-TODO: Describe challenge 2, add some pictures, etc.
-
-## Challenge 3
-
-TODO: Describe challenge 3, add some pictures, etc.
