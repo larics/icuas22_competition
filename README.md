@@ -37,9 +37,9 @@ This should automatically setup and start the challenge, as well as run your cod
 * Commands that run your challenge solution (rosrun, roslaunch etc.) should be placed in the ```session.yml``` file.
 * Software configuration specific to the challenge should be placed in the ```custom_config``` folder.
 
-*NOTE* If you are unfamiliar with the Docker or Tmux commands please check out this [quick-start guide](https://github.com/larics/uav_ros_simulation/blob/main/HOWTO.md).
+**NOTE** If you are unfamiliar with the Docker or Tmux commands please check out this [quick-start guide](https://github.com/larics/uav_ros_simulation/blob/main/HOWTO.md).
 
-*NOTE* If you choose to run the challenge inside the docker environment, please run the container first using:
+**NOTE** If you choose to run the challenge inside the docker environment, please run the container first using:
 ```
 ./docker_run.sh
 ```
@@ -48,6 +48,10 @@ Additional arguments:
 * ```--focal``` - Run Focal distro container
 * ```--bionic``` - Run Bionic distro container
 * ```--run-args``` - Append additional Docker run arguments, e.g. --rm
+
+**NOTE** Keep in mind this will start a new container so any changes you make inside that container will be lost if you remove the container.
+The idea of the container is to easily integrate your code with the challenge flight stack. To do so, please add your code diretcly to this ROS package since it is copied to the container. Furthermore, feel free to edit ```Dockerfile.focal``` or ```Dockerfile.bionic``` files to 
+get all the resources and build your solution.
 
 ## Challenge
 
