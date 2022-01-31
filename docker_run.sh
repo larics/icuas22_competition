@@ -30,7 +30,7 @@ do
 
 done
 
-echo "Building for $distro"
+echo "Running in $distro"
 
 docker run \
   $run_args \
