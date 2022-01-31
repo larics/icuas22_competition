@@ -20,7 +20,9 @@ windows:
   - arm&takeof:
       layout: tiled
       panes:
-        - waitForRos; roslaunch uav_ros_control pid_carrot.launch manual_takeoff:=false
+        - waitForRos; roslaunch uav_ros_control pid_carrot.launch 
+          manual_takeoff:=false
+          default_params:=custom_config/position_control_custom.yaml
         - rosrun ardupilot_gazebo automatic_takeoff.sh
   - trajectory:
       layout: tiled
