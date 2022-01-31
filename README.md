@@ -53,6 +53,25 @@ Additional arguments:
 The idea of the container is to easily integrate your code with the challenge flight stack. To do so, please add your code diretcly to this ROS package since it is copied to the container. Furthermore, feel free to edit ```Dockerfile.focal``` or ```Dockerfile.bionic``` files to 
 get all the resources and build your solution.
 
+## Simulation
+
+| ![simulation.png](.fig/simulation.png) | 
+|:--:| 
+| UAV simulation template startup. Tmux session is running on the left side, with Gazebo client positioned on the right. |
+
+### Topics
+
+* ```tracker/input_pose``` - Generate and execute a trajectory to the given pose
+* ```tracker/input_trajectory``` - Generate a trajectory using the given sampled path
+* ```position_hold/trajectory``` - Publish a trajectory point directly to the UAV position control
+
+### Configuration
+
+Configuration files are placed in the ```startup/challenge/custom_config``` folder.
+
+* [Position Control](startup/challenge/custom_config/position_control_custom.yaml)
+* [TOPP Trajectory Generation](startup/challenge/custom_config/topp_config_custom.yaml)
+
 ## Challenge
 
 TODO: Describe challenge 1, add some pictures, etc.
