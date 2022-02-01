@@ -16,7 +16,10 @@ windows:
       layout: tiled
       panes:
         - waitForRos; roslaunch ardupilot_gazebo kopterworx.launch use_sim_time:=true
-        - # Setup Challenge in gazebo here...
+          x:=-10
+        - waitForRos; waitForSimulation; roslaunch larics_gazebo_worlds spawn_arena_v1.launch
+        - waitForRos; waitForSimulation; roslaunch larics_gazebo_worlds spawn_alvar_tile.launch 
+          x:=12.5 yaw:=3.1415926 z:=2 y:=-3
   - arm&takeof:
       layout: tiled
       panes:
