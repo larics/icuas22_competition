@@ -74,4 +74,4 @@ Configuration files are placed in the ```startup/challenge/custom_config``` fold
 
 ## Challenge
 
-TODO: Describe challenge 1, add some pictures, etc.
+More details on the challenge can be found in the competition rulebook http://www.uasconferences.com/2022_icuas/uav-competition-rulebook-and-faq/
