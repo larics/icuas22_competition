@@ -59,11 +59,17 @@ get all the resources and build your solution.
 |:--:| 
 | UAV simulation template startup. Tmux session is running on the left side, with Gazebo client positioned on the right. |
 
-### Topics
+### Controlling the UAV
 
-* ```tracker/input_pose``` - Generate and execute a trajectory to the given pose
-* ```tracker/input_trajectory``` - Generate a trajectory using the given sampled path
+For your reference, we have set up trajectory planning using TOPP-RA, which you can use by publishing to two topics:
+
+* ```tracker/input_pose``` - Send a waypoint (PoseStamped) to TOPP-RA. TOPP-RA then interpolates trajectory between current UAV pose and the target waypoint, and sends trajectory points (MultiDOFJointTrajectoryPoint) to topic ```position_hold/trajectory``` with a given rate. The position controller of the UAV receives the trajectory point as a reference and commands the motors. 
+* ```tracker/input_trajectory``` - Generate a trajectory using the given sampled path in form of waypoints (MultiDOFJointTrajectory). TOPP-RA then interpolates trajectory from the current UAV pose to the first point of the trajectory, and interpolates trajectory between sampled path points. Once trajectory is interpolated, each trajectory point is sent as a reference to the position controller via the ```position_hold/trajectory``` topic
+
+To control the UAV directly, and to publish the trajectory that you generated via your solution, you need to use the following topic:
 * ```position_hold/trajectory``` - Publish a trajectory point directly to the UAV position control
+
+Current position reference (last one sent to the position controller of the UAV) can be obtained via ```carrot/pose``` topic, while current pose of the UAV (in simulation) is available at ```mavros/global_position/local``` topic.
 
 ### Configuration
 
