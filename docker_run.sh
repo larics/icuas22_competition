@@ -15,15 +15,15 @@ for (( i=1; i<=$#; i++));
 do
   param="${!i}"
 
-  if [ $param == "--bionic" ]; then
+  if [ "$param" == "--bionic" ]; then
     distro="bionic"
   fi
 
-  if [ $param == "--focal" ]; then
+  if [ "$param" == "--focal" ]; then
     distro="focal"
   fi
 
-  if [ $param == "--run-args" ]; then
+  if [ "$param" == "--run-args" ]; then
     j=$((i+1))
     run_args="${!j}"
   fi
