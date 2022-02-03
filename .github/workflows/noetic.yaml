@@ -1,0 +1,51 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Noetic
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+    paths-ignore: 
+      - '**/README.md'
+      - '**/CHANGELOG.md'
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - '**/README.md'
+      - '**/CHANGELOG.md'
+
+  schedule:
+    - cron:  '0 0 * * *' # at the end of every day
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  
+  cancel:
+    name: Cancel Previous Runs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.8.0
+        with:
+          access_token: ${{ github.token }}
+
+   # This workflow contains a single job called "build"
+  build:
+      
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    needs: cancel
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs a single command using the runners shell
+      - name: Install
+        run: ./docker_build.sh --focal
