@@ -134,3 +134,5 @@ More details on the challenge can be found in the competition rulebook http://ww
 * ```challenge_started``` - After ```True``` is published on this topic the challenge is setup correctly and you can safely run your code.
 * ```spawn_ball``` - You can manually call this service at any point to reset the ball at the UAV.
 * ```uav_magnet/gain``` - When you want to detach the ball from the magnetic gripper, publish a ```0``` gain on this topic.
+
+**NOTE** If you detach the ball by setting the UAV magnet gain to ```0``` and want to spawn another ball using the ```spawn_ball``` service, you will have to reset the gain to ```1.0``` in order for the UAV magnet to become active again.
