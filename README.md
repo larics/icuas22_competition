@@ -1,6 +1,10 @@
 # ICUAS 2022 UAV Competition
 The main repository for the ICUAS 2022 UAV competition.
 
+
+| ICUAS 2022 Competition build status | [![Melodic](https://github.com/larics/icuas22_competition/actions/workflows/melodic.yaml/badge.svg)](https://github.com/larics/icuas22_competition/actions/workflows/melodic.yaml)  | [![Noetic](https://github.com/larics/icuas22_competition/actions/workflows/noetic.yaml/badge.svg)](https://github.com/larics/icuas22_competition/actions/workflows/noetic.yaml) |
+|-----------------------|---------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
+
 ## Install
 
 You can either manually install the UAV software stack by following 
