@@ -12,6 +12,15 @@ To install Docker on your system execute the following command:
 curl https://raw.githubusercontent.com/larics/uav_ros_simulation/main/installation/dependencies/docker.sh | bash
 ```
 
+## Troubleshooting
+
+* Check ```CHANGELOG.md``` for any new changes added to this project
+* ```git pull origin main --rebase``` - in case there are new changes to the challenge repository.
+* ```git pull lmark1/uav_ros_simulation:[[DISTRO]]``` - in case the Docker container simulation is not working correctly.
+* ```./docker_build --build-args "--no-cache --pull" --[[DISTRO]]``` - in case the Docker container simulation is (still) not working correctly.
+
+**NOTE** - If the challenge does not setup correctly it is not your fault! Try following the troubleshooting recommendation. If your problem is not resolved please post an issue.
+
 ## Build
 
 You can either manually build all the packages on your system using the ```catkin build``` command.
@@ -81,3 +90,11 @@ Configuration files are placed in the ```startup/challenge/custom_config``` fold
 ## Challenge
 
 More details on the challenge can be found in the competition rulebook http://www.uasconferences.com/2022_icuas/uav-competition-rulebook-and-faq/
+0
+| ![challenge.png](.fig/challenge.png) | 
+|:--:| 
+| UAV setup for the ICUAS 2022 challenge. |
+
+* ```challenge_started``` - After ```True``` is published on this topic the challenge is setup correctly and you can safely run your code.
+* ```spawn_ball``` - You can manually call this service at any point to reset the ball at the UAV.
+* ```uav_magnet/gain``` - When you want to detach the ball from the magnetic gripper, publish a ```0``` gain on this topic.
