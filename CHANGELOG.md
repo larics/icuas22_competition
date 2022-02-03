@@ -6,7 +6,7 @@
 ### Changed
 - Add [larics/storm_gazebo_ros_magnet](https://github.com/larics/storm_gazebo_ros_magnet.git) ROS package to all Dockerfiles
 - Update ```startup/challenge/session.yml``` to spawn the UAV with a magnetic gripper
-- Update ```startup/challenge/session.yml``` to spwan the magnetic ball after UAV takeoff
+- Update ```startup/challenge/session.yml``` to spawn the magnetic ball after UAV takeoff
 
 ### Added
 - ```spawn_ball_at_uav.py``` - controls spawning of the magnetic ball 

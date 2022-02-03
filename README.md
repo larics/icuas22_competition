@@ -14,12 +14,48 @@ curl https://raw.githubusercontent.com/larics/uav_ros_simulation/main/installati
 
 ## Troubleshooting
 
-* Check ```CHANGELOG.md``` for any new changes added to this project
-* ```git pull origin main --rebase``` - in case there are new changes to the challenge repository.
-* ```git pull lmark1/uav_ros_simulation:[[DISTRO]]``` - in case the Docker container simulation is not working correctly.
-* ```./docker_build --build-args "--no-cache --pull" --[[DISTRO]]``` - in case the Docker container simulation is (still) not working correctly.
+Check ```CHANGELOG.md``` for any new changes added to this project.
 
-**NOTE** - If the challenge does not setup correctly it is not your fault! Try following the troubleshooting recommendation. If your problem is not resolved please post an issue.
+**NOTE** - If the challenge does not setup correctly it is (probably) not your fault! Components are subject to some changes during the competition so most problems should be solved by updating packages. Try following the troubleshooting recommendation. If the problem persists please post an issue.
+
+### Update this package
+In case there are new changes to the challenge repository:
+```bash
+git pull origin main --rebase
+catkin build
+```
+
+### Update Docker images
+In case the Docker container simulation is not working correctly (e.g. an update happened):
+```bash
+git pull lmark1/uav_ros_simulation:[[DISTRO]]
+```
+
+In case the simulation inside the Docker container is (still) not working correctly:
+```bash
+./docker_build.sh --build-args "--no-cache --pull" --[[DISTRO]]
+```
+
+### Updating native installation
+If your building all the packages natively, navigate to the ```uav_ros_simulation``` folder and do the following:
+```bash
+git pull origin main
+gitman install --force
+
+# Navigate to catkin workspace (default is uav_ws)
+catkin build
+```
+
+Update all the, manually installed, required dependencies as follows:
+```bash
+git pull origin main
+catkin build
+```
+
+Required dependencies are as follows:
+* [larics_gazebo_worlds](https://github.com/larics/larics_gazebo_worlds.git)
+* [storm_gazebo_magnet](https://github.com/larics/storm_gazebo_ros_magnet.git) - branch: ```melodic_electromagnet_dev```
+
 
 ## Build
 
