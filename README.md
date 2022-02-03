@@ -37,7 +37,7 @@ In case the simulation inside the Docker container is (still) not working correc
 ```
 
 ### Updating native installation
-If your building all the packages natively, navigate to the ```uav_ros_simulation``` folder and do the following:
+If you're building all the packages natively, navigate to the ```uav_ros_simulation``` folder and do the following:
 ```bash
 git pull origin main
 gitman install --force
