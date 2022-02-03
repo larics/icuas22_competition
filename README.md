@@ -12,6 +12,51 @@ To install Docker on your system execute the following command:
 curl https://raw.githubusercontent.com/larics/uav_ros_simulation/main/installation/dependencies/docker.sh | bash
 ```
 
+## Troubleshooting
+
+Check ```CHANGELOG.md``` for any new changes added to this project.
+
+**NOTE** - If the challenge does not setup correctly it is (probably) not your fault! Components are subject to some changes during the competition so most problems should be solved by updating packages. Try following the troubleshooting recommendation. If the problem persists please post an issue.
+
+### Update this package
+In case there are new changes to the challenge repository:
+```bash
+git pull origin main --rebase
+catkin build
+```
+
+### Update Docker images
+In case the Docker container simulation is not working correctly (e.g. an update happened):
+```bash
+git pull lmark1/uav_ros_simulation:[[DISTRO]]
+```
+
+In case the simulation inside the Docker container is (still) not working correctly:
+```bash
+./docker_build.sh --build-args "--no-cache --pull" --[[DISTRO]]
+```
+
+### Updating native installation
+If you're building all the packages natively, navigate to the ```uav_ros_simulation``` folder and do the following:
+```bash
+git pull origin main
+gitman install --force
+
+# Navigate to catkin workspace (default is uav_ws)
+catkin build
+```
+
+Update all the, manually installed, required dependencies as follows:
+```bash
+git pull origin main
+catkin build
+```
+
+Required dependencies are as follows:
+* [larics_gazebo_worlds](https://github.com/larics/larics_gazebo_worlds.git)
+* [storm_gazebo_magnet](https://github.com/larics/storm_gazebo_ros_magnet.git) - branch: ```melodic_electromagnet_dev```
+
+
 ## Build
 
 You can either manually build all the packages on your system using the ```catkin build``` command.
@@ -81,3 +126,13 @@ Configuration files are placed in the ```startup/challenge/custom_config``` fold
 ## Challenge
 
 More details on the challenge can be found in the competition rulebook http://www.uasconferences.com/2022_icuas/uav-competition-rulebook-and-faq/
+0
+| ![challenge.png](.fig/challenge.png) | 
+|:--:| 
+| UAV setup for the ICUAS 2022 challenge. |
+
+* ```challenge_started``` - After ```True``` is published on this topic the challenge is setup correctly and you can safely run your code.
+* ```spawn_ball``` - You can manually call this service at any point to reset the ball at the UAV.
+* ```uav_magnet/gain``` - When you want to detach the ball from the magnetic gripper, publish a ```0``` gain on this topic.
+
+**NOTE** If you detach the ball by setting the UAV magnet gain to ```0``` and want to spawn another ball using the ```spawn_ball``` service, you will have to reset the gain to ```1.0``` in order for the UAV magnet to become active again.

@@ -7,16 +7,17 @@ build_args=""
 for (( i=1; i<=$#; i++));
 do
   param="${!i}"
+  echo $param
 
-  if [ $param == "--bionic" ]; then
+  if [ "$param" == "--bionic" ]; then
     distro="bionic"
   fi
 
-  if [ $param == "--focal" ]; then
+  if [ "$param" == "--focal" ]; then
     distro="focal"
   fi
 
-  if [ $param == "--build-args" ]; then
+  if [ "$param" == "--build-args" ]; then
     j=$((i+1))
     build_args="${!j}"
   fi
