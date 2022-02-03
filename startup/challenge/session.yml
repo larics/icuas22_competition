@@ -7,15 +7,18 @@ windows:
       layout: tiled
       panes:
         - roscore
-        - export SITL_RITW_TERMINAL="tmux new-window -n:ardupilot1"; waitForRos; 
+        - export SITL_RITW_TERMINAL="tmux new-window -d -n:ardupilot1"; waitForRos; 
           roslaunch ardupilot_gazebo sim_vehicle.launch 
           enable_console:=false
           additional_arguments:="--no-rebuild"
-        - waitForRos; rosparam set use_sim_time true; roslaunch ardupilot_gazebo mavros.launch 
+        - waitForRos; rosparam set use_sim_time true; roslaunch ardupilot_gazebo mavros.launch
+        - waitForRos; rosrun icuas22_competition spawn_ball_at_uav.py __ns:=$UAV_NAMESPACE
   - gazebo:
       layout: tiled
       panes:
-        - waitForRos; roslaunch ardupilot_gazebo kopterworx.launch use_sim_time:=true
+        - waitForRos; roslaunch ardupilot_gazebo kopterworx.launch 
+          use_sim_time:=true
+          enable_magnet:=true
           x:=-10
         - waitForRos; waitForSimulation; roslaunch larics_gazebo_worlds spawn_arena_v1.launch
         - waitForRos; waitForSimulation; roslaunch larics_gazebo_worlds spawn_alvar_tile.launch 
@@ -26,7 +29,11 @@ windows:
         - waitForRos; roslaunch uav_ros_control pid_carrot.launch 
           manual_takeoff:=false
           default_params:=custom_config/position_control_custom.yaml
-        - rosrun ardupilot_gazebo automatic_takeoff.sh
+        - |
+          rosrun ardupilot_gazebo automatic_takeoff.sh
+          sleep 10
+          rosservice call /$UAV_NAMESPACE/spawn_ball
+          rostopic pub --latch std_msgs/Bool /$UAV_NAMESPACE/challenge_started True
   - trajectory:
       layout: tiled
       panes:
