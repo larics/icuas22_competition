@@ -12,6 +12,9 @@ on:
       - '**/CHANGELOG.md'
   pull_request:
     branches: [ main ]
+    paths-ignore:
+      - '**/README.md'
+      - '**/CHANGELOG.md'
 
   schedule:
     - cron:  '0 0 * * *' # at the end of every day
