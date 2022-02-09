@@ -1,6 +1,16 @@
 
 # Change Log
 
+
+## [1.0.2] - 09-02-2022
+
+### Changed
+- Updated ```startup/challenge/session.yml``` to launch world with improved lighting
+
+### Added
+- ```well_lit.world``` - world with improved lighting
+- ```well_lit_world.launch``` - launch file for world with improved lighting
+
 ## [1.0.1] - 03-02-2022
 
 ### Changed
