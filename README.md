@@ -19,7 +19,9 @@ curl https://raw.githubusercontent.com/larics/uav_ros_simulation/main/installati
 ## Troubleshooting
 
 Checkout ```CHANGELOG.md``` for any new changes added to this project.
+
 Feel free to use [Discussions](https://github.com/larics/icuas22_competition/discussions) tab to exchange ideas and ask questions.
+
 Consider opening an [Issue](https://github.com/larics/icuas22_competition/issues) if you have troubles with the simulation setup.
 
 **NOTE** - If the challenge does not setup correctly it is (probably) not your fault! Components are subject to some changes during the competition so most problems should be solved by updating packages. Try following the troubleshooting recommendation. If the problem persists please post an issue.
