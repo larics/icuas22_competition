@@ -11,6 +11,7 @@ windows:
           roslaunch ardupilot_gazebo sim_vehicle.launch 
           enable_console:=false
           additional_arguments:="--no-rebuild"
+          parm_file:=$(rospack find icuas22_competition)/parameters/arducopter_nogps.params
         - waitForRos; rosparam set use_sim_time true; roslaunch ardupilot_gazebo mavros.launch
         - waitForRos; rosrun icuas22_competition spawn_ball_at_uav.py __ns:=$UAV_NAMESPACE
   - gazebo:
@@ -29,16 +30,21 @@ windows:
       panes:
         - waitForRos; roslaunch uav_ros_control pid_carrot.launch 
           manual_takeoff:=false
+          local_callback_enable:=true
+          odometry:=odometry
+          control_type:=pid_cascade_node_yawrate
           default_params:=custom_config/position_control_custom.yaml
         - |
-          rosrun ardupilot_gazebo automatic_takeoff.sh
-          sleep 10
+          waitForRos
+          waitForSysStatus
+          rosrun ardupilot_gazebo automatic_takeoff.sh 2 /$UAV_NAMESPACE/odometry
+          sleep 20
           rosservice call /$UAV_NAMESPACE/spawn_ball
           rostopic pub --latch std_msgs/Bool /$UAV_NAMESPACE/challenge_started True
   - trajectory:
       layout: tiled
       panes:
-        - waitForRos; waitForOdometry; roslaunch uav_ros_tracker topp_tracker.launch 
+        - waitForRos; roslaunch uav_ros_tracker topp_tracker.launch 
           tracker_config:=custom_config/topp_config_custom.yaml
   - solution:
       layout: tiled
