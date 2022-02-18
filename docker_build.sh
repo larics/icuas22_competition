@@ -17,6 +17,10 @@ do
     distro="focal"
   fi
 
+  if [ "$param" == "--focal-nogpu" ]; then
+    distro="focal-nogpu"
+  fi
+
   if [ "$param" == "--build-args" ]; then
     j=$((i+1))
     build_args="${!j}"

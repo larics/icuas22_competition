@@ -23,6 +23,10 @@ do
     distro="focal"
   fi
 
+  if [ "$param" == "--focal-nogpu" ]; then
+    distro="focal-nogpu"
+  fi
+
   if [ "$param" == "--run-args" ]; then
     j=$((i+1))
     run_args="${!j}"
