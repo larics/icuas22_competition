@@ -1,6 +1,14 @@
 
 # Change Log
 
+## [1.0.4] - 19-02-2022
+
+### Added
+- ```Dockerfile.focal-nogpu``` - A Dockerfile for hardware without a dedicated graphics card.
+
+### Changed
+- ```run_docker.sh``` - Disable ```--gpus all``` flag if running an image that does not use a dedicated GPU.
+
 ## [1.0.3] - 15-02-2022
 
 ### Changed

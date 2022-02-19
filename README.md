@@ -76,6 +76,7 @@ Alternatively, to build the ICUAS2022 Competition solution image please execute 
 
 Additional arguments:
 * ```--focal``` - Build Docker image for Focal distro
+* ```--focal-nogpu``` - Build Docker image for Focal distro (no dedicated graphics card)
 * ```--bionic``` - Build Docker image for Bionic distra (default)
 * ```--build-args``` - Append additional Docker build arguments, e.g. --no-cache
 
@@ -99,6 +100,7 @@ This should automatically setup and start the challenge, as well as run your cod
 
 Additional arguments:
 * ```--focal``` - Run Focal distro container
+* ```--focal-nogpu``` - Run Focal distro container (no dedicated graphics card)
 * ```--bionic``` - Run Bionic distro container
 * ```--run-args``` - Append additional Docker run arguments, e.g. --rm
 
