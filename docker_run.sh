@@ -36,12 +36,18 @@ done
 
 echo "Running in $distro"
 
+# Check if using GPU
+gpu_enabled="--gpus all"
+if [ "$distro" == "focal-nogpu" ]; then
+  gpu_enabled=""
+fi
+
 docker run \
   $run_args \
   -it \
   --network host \
   --privileged \
-  --gpus all \
+  $gpu_enabled \
   --volume=$XSOCK:$XSOCK:rw \
   --volume=$XAUTH:$XAUTH:rw \
   --env="XAUTHORITY=${XAUTH}" \
