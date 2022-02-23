@@ -40,7 +40,7 @@ windows:
           rosrun ardupilot_gazebo automatic_takeoff.sh 2 /$UAV_NAMESPACE/odometry
           sleep 20
           rosservice call /$UAV_NAMESPACE/spawn_ball
-          rostopic pub --latch std_msgs/Bool /$UAV_NAMESPACE/challenge_started True
+          rostopic pub --latch /$UAV_NAMESPACE/challenge_started std_msgs/Bool True
   - trajectory:
       layout: tiled
       panes:
