@@ -1,6 +1,14 @@
 
 # Change Log
 
+## [1.0.5] - 25-02-2022
+
+### Added
+- ```startup/challenge/custom_config/position_control_thrust.yaml``` - Position parameters used for thrust control
+
+### Changed
+- ```startup/challenge/session.yml``` - Use the new position control parameter set where thrust is regarded as thrust, and not climb rate.
+
 ## [1.0.4] - 19-02-2022
 
 ### Added
