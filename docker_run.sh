@@ -6,9 +6,10 @@ touch $XAUTH
 xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
 
 echo "Running Docker Container"
+CONTAINER_NAME=icuas22_competition
 
 # Get distro of the built image
-distro=$(docker images icuas22_competition | tail -n1 | awk '{print $2}')
+distro=$(docker images $CONTAINER_NAME | tail -n1 | awk '{print $2}')
 run_args=""
 
 for (( i=1; i<=$#; i++));
@@ -36,6 +37,18 @@ done
 
 echo "Running in $distro"
 
+# Check if there is an already running container with the same distro
+running_container="$(docker container ls -al | grep $CONTAINER_NAME_$distro)"
+full_container_name="${CONTAINER_NAME}_${distro}"
+if [ -z "$running_container" ]; then
+  echo "Running $full_container_name for the first time!"
+else
+  echo "Found an open $full_container_name container. Starting and attaching!"
+  eval "docker start $full_container_name"
+  eval "docker attach $full_container_name"
+  exit 0
+fi
+
 # Check if using GPU
 gpu_enabled="--gpus all"
 if [ "$distro" == "focal-nogpu" ]; then
@@ -53,6 +66,6 @@ docker run \
   --env="XAUTHORITY=${XAUTH}" \
   --env DISPLAY=$DISPLAY \
   --env TERM=xterm-256color \
-  --name icuas22_competition_$distro \
+  --name $full_container_name \
   icuas22_competition:$distro \
   /bin/bash
