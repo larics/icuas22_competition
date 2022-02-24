@@ -30,10 +30,10 @@ windows:
       panes:
         - waitForRos; roslaunch uav_ros_control pid_carrot.launch 
           manual_takeoff:=false
-          local_callback_enable:=true
+          msf_callback_enable:=true
           odometry:=odometry
           control_type:=pid_cascade_node_yawrate
-          default_params:=custom_config/position_control_custom.yaml
+          default_params:=custom_config/position_control_thrust.yaml
         - |
           waitForRos
           waitForSysStatus
