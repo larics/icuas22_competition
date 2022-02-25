@@ -38,8 +38,8 @@ done
 echo "Running in $distro"
 
 # Check if there is an already running container with the same distro
-running_container="$(docker container ls -al | grep $CONTAINER_NAME_$distro)"
 full_container_name="${CONTAINER_NAME}_${distro}"
+running_container="$(docker container ls -al | grep $full_container_name)"
 if [ -z "$running_container" ]; then
   echo "Running $full_container_name for the first time!"
 else
