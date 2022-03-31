@@ -104,6 +104,12 @@
       <light name='alvar_tag_light'>
         <pose frame=''>-2.5 0 2 -3.14159 -1.5707 -3.14159</pose>
       </light>
+      <light name='alvar_tag_light_2'>
+        <pose frame=''>6 7 2 -3.14159 -1.5707 1.5707</pose>
+      </light>
+      <light name='alvar_tag_light_3'>
+        <pose frame=''>6 -7 2 -3.14159 -1.5707 -1.5707</pose>
+      </light>
     </state>
     <gui fullscreen='0'>
       <camera name='user_camera'>
@@ -113,6 +119,42 @@
       </camera>
     </gui>
     <light name='alvar_tag_light' type='spot'>
+      <pose frame=''>11.942 -2.79642 1 0 -0 0</pose>
+      <diffuse>0.5 0.5 0.5 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <direction>0 0 -1</direction>
+      <attenuation>
+        <range>20</range>
+        <constant>0.5</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <cast_shadows>0</cast_shadows>
+      <spot>
+        <inner_angle>0.6</inner_angle>
+        <outer_angle>1</outer_angle>
+        <falloff>1</falloff>
+      </spot>
+    </light>
+    <light name='alvar_tag_light_2' type='spot'>
+      <pose frame=''>11.942 -2.79642 1 0 -0 0</pose>
+      <diffuse>0.5 0.5 0.5 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <direction>0 0 -1</direction>
+      <attenuation>
+        <range>20</range>
+        <constant>0.5</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <cast_shadows>0</cast_shadows>
+      <spot>
+        <inner_angle>0.6</inner_angle>
+        <outer_angle>1</outer_angle>
+        <falloff>1</falloff>
+      </spot>
+    </light>
+    <light name='alvar_tag_light_3' type='spot'>
       <pose frame=''>11.942 -2.79642 1 0 -0 0</pose>
       <diffuse>0.5 0.5 0.5 1</diffuse>
       <specular>0.1 0.1 0.1 1</specular>
