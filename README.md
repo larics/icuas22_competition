@@ -88,6 +88,12 @@ To automatically start and setup the challenge navigate to ```startup/challenge`
 ```
 This should automatically setup and start the challenge, as well as run your code.
 
+There are three worlds available for the challenge. If you want to start the challenge with different world you can run:
+```
+./start.sh N
+```
+where N can be 1, 2 or 3 depending on the world you want to load.
+
 * Commands that run your challenge solution (rosrun, roslaunch etc.) should be placed in the ```session.yml``` file.
 * Software configuration specific to the challenge should be placed in the ```custom_config``` folder.
 
