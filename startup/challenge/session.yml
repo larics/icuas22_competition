@@ -1,10 +1,40 @@
 name: icuas_ch
 root: ./
 startup_window: roscore
-pre_window: export UAV_NAMESPACE=red
+pre_window: |
+  export UAV_NAMESPACE=red;
+  export ARENA_TYPE=<%= @settings["arena"]%>;
+  if [[ -z "${ARENA_TYPE}" ]]
+  then 
+    export ARENA_TYPE=1
+  fi;
+  if [ $ARENA_TYPE -ge 4] || [ $ARENA_TYPE -le 0 ]
+  then
+    echo "arena argument should be 1, 2 or 3. Defaulting to 1."
+    export ARENA_TYPE=1
+  fi;
+  if [ $ARENA_TYPE -eq 1 ]
+  then
+    export TILE_X=12.5
+    export TILE_Y=-3.0
+    export TILE_Z=2.0
+    export TILE_YAW=3.1415926
+  elif [ $ARENA_TYPE -eq 2 ]
+  then
+    export TILE_X=9.0
+    export TILE_Y=-7.5
+    export TILE_Z=2.5
+    export TILE_YAW=1.57079632679
+  elif [ $ARENA_TYPE -eq 3 ]
+  then
+    export TILE_X=7.5
+    export TILE_Y=7.5
+    export TILE_Z=3.5
+    export TILE_YAW=-1.57079632679
+  fi;
 windows:
   - roscore:
-      layout: tiled
+      layout:
       panes:
         - roscore
         - export SITL_RITW_TERMINAL="tmux new-window -d -n:ardupilot1"; waitForRos; 
@@ -22,9 +52,9 @@ windows:
           enable_magnet:=true
           x:=-10
           world:=$(rospack find icuas22_competition)/worlds/well_lit.world
-        - waitForRos; waitForSimulation; roslaunch larics_gazebo_worlds spawn_arena_v1.launch
-        - waitForRos; waitForSimulation; roslaunch larics_gazebo_worlds spawn_alvar_tile.launch 
-          x:=12.5 yaw:=3.1415926 z:=2 y:=-3
+        - waitForRos; waitForSimulation; roslaunch larics_gazebo_worlds spawn_arena_v$ARENA_TYPE.launch
+        - waitForRos; waitForSimulation; sleep 2; roslaunch larics_gazebo_worlds spawn_alvar_tile.launch 
+          x:=$TILE_X yaw:=$TILE_YAW z:=$TILE_Z y:=$TILE_Y
   - arm&takeof:
       layout: tiled
       panes:
