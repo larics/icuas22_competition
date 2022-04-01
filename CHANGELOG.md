@@ -1,6 +1,16 @@
 
 # Change Log
 
+## [1.0.6] - 01-04-2022
+
+### Added
+- two new arenas with different obstacle layouts
+- textures for all arenas
+
+### Changed
+- ```startup/challenge/session.yml``` - Added support for launching different arenas
+- ```worlds/well_lit.world``` - Added more spot lights
+
 ## [1.0.5] - 25-02-2022
 
 ### Added
