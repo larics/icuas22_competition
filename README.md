@@ -48,7 +48,7 @@ In case the simulation inside the Docker container is (still) not working correc
 If you're building all the packages natively, navigate to the ```uav_ros_simulation``` folder and do the following:
 ```bash
 git pull origin main
-gitman install --force
+./installation/install.sh
 
 # Navigate to catkin workspace (default is uav_ws)
 catkin build
