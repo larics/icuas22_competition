@@ -8,7 +8,7 @@ pre_window: |
   then 
     export ARENA_TYPE=1
   fi;
-  if [ $ARENA_TYPE -ge 4] || [ $ARENA_TYPE -le 0 ]
+  if [ $ARENA_TYPE -ge 6] || [ $ARENA_TYPE -le 0 ]
   then
     echo "arena argument should be 1, 2 or 3. Defaulting to 1."
     export ARENA_TYPE=1
@@ -25,7 +25,7 @@ pre_window: |
     export TILE_Y=-7.5
     export TILE_Z=2.5
     export TILE_YAW=1.57079632679
-  elif [ $ARENA_TYPE -eq 3 ]
+  elif [ $ARENA_TYPE -ge 3 ]
   then
     export TILE_X=7.5
     export TILE_Y=7.5
