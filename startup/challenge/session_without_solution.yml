@@ -1,0 +1,62 @@
+root: ./
+startup_window: roscore
+pre_window: |
+  export UAV_NAMESPACE=red;
+  export TILE_X_E=9.35
+  export TILE_Y_E=7.5
+  export TILE_Z_E=2.84
+  export TILE_YAW_E=-1.57079632679
+  export UAV_X_E=-10.5
+  export UAV_Y_E=5.5
+windows:
+  - roscore:
+      layout:
+      panes:
+        - roscore
+        - export SITL_RITW_TERMINAL="tmux new-window -d -n:ardupilot1"; waitForRos; 
+          roslaunch ardupilot_gazebo sim_vehicle.launch 
+          enable_console:=false
+          additional_arguments:="--no-rebuild"
+          parm_file:=$(rospack find icuas22_competition)/parameters/arducopter_nogps.params
+        - waitForRos; rosparam set use_sim_time true; roslaunch ardupilot_gazebo mavros.launch
+        - waitForRos; rosrun icuas22_competition spawn_ball_at_uav.py __ns:=$UAV_NAMESPACE
+  - gazebo:
+      layout: tiled
+      panes:
+        - waitForRos; roslaunch ardupilot_gazebo kopterworx.launch 
+          use_sim_time:=true
+          enable_magnet:=true
+          x:=$UAV_X_E y:=$UAV_Y_E
+          world:=$(rospack find icuas22_evaluator)/worlds/well_lit.world
+        - waitForRos; waitForSimulation; roslaunch icuas22_competition spawn_arena_v7.launch
+        - waitForRos; waitForSimulation; sleep 2; roslaunch larics_gazebo_worlds spawn_alvar_tile.launch 
+          x:=$TILE_X_E yaw:=$TILE_YAW_E z:=$TILE_Z_E y:=$TILE_Y_E
+  - arm&takeof:
+      layout: tiled
+      panes:
+        - waitForRos; roslaunch uav_ros_control pid_carrot.launch 
+          manual_takeoff:=false
+          msf_callback_enable:=true
+          odometry:=odometry
+          control_type:=pid_cascade_node_yawrate
+          default_params:=custom_config/position_control_thrust.yaml
+        - |
+          waitForRos
+          waitForSysStatus
+          rosrun ardupilot_gazebo automatic_takeoff.sh 2 /$UAV_NAMESPACE/odometry
+          sleep 5
+          rosservice call /$UAV_NAMESPACE/spawn_ball
+          rostopic pub --latch /$UAV_NAMESPACE/challenge_started std_msgs/Bool True
+  - trajectory:
+      layout: tiled
+      panes:
+        - waitForRos; roslaunch uav_ros_tracker topp_tracker.launch 
+          tracker_config:=custom_config/topp_config_custom.yaml
+  - evaluation:
+      layout: tiled
+      panes:
+        - |
+          waitForRos
+          sleep 10
+          rosrun icuas22_competition evaluate.py
+

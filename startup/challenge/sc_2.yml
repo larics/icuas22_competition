@@ -1,0 +1,6 @@
+  export TILE_X_E=7.82
+  export TILE_Y_E=7.5
+  export TILE_Z_E=1.75
+  export TILE_YAW_E=-1.57079632679
+  export UAV_X_E=-10.50
+  export UAV_Y_E=-2.5

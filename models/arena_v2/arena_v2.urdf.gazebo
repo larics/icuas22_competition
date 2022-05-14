@@ -1,0 +1,33 @@
+<robot name="arena_v2" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <link name="arena_v2_base_link">
+    <visual>
+    <geometry>
+      <mesh filename="$(find larics_gazebo_worlds)/models/competition/arena_v2/arena_v2.dae" scale="1 1 1" />
+    </geometry>
+    </visual>
+    <inertial>
+      <inertia ixx="10000" ixy="0.0" ixz="0.0" iyy="10000" iyz="0.0"
+        izz="10000" />
+    <mass value="100000.0" />
+    </inertial>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="$(find larics_gazebo_worlds)/models/competition/arena_v2/arena_v2.dae" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+
+  <gazebo>
+    <static>true</static>
+  </gazebo>
+
+  <!--joint name="greenhouse_fixed_to_ground" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <parent link="ground_plane::link"/>
+    <child link="greenhouse_base_link"/>
+  </joint-->
+</robot>

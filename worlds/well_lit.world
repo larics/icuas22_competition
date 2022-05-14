@@ -172,5 +172,61 @@
         <falloff>1</falloff>
       </spot>
     </light>
+    <plugin name='ros_contain_gazebo_plugin' filename='libros_contain_gazebo_plugin.so'>
+      <enabled>true</enabled>
+      <entity>red::red/base_link</entity>
+      <namespace>zone_1</namespace>
+      <pose>-10.25 0 2.25 0 0 0</pose>
+      <robot_namespace>red</robot_namespace>
+      <contain_topic>entry_z1</contain_topic>
+      <geometry>
+        <box>
+          <size>4.5 15 4.5</size>
+        </box>
+      </geometry>
+      <rate>10</rate>
+    </plugin>
+    <plugin name='ros_contain_gazebo_plugin' filename='libros_contain_gazebo_plugin.so'>
+      <enabled>true</enabled>
+      <entity>red::red/base_link</entity>
+      <namespace>zone_2</namespace>
+      <pose>-3.5 0 2.25 0 0 0</pose>
+      <robot_namespace>red</robot_namespace>
+      <contain_topic>entry_z2</contain_topic>
+      <geometry>
+        <box>
+          <size>9 15 4.5</size>
+        </box>
+      </geometry>
+      <rate>10</rate>
+    </plugin>
+    <plugin name='ros_contain_gazebo_plugin' filename='libros_contain_gazebo_plugin.so'>
+      <enabled>true</enabled>
+      <entity>red::red/base_link</entity>
+      <namespace>zone_3</namespace>
+      <pose>5.75 0 2.25 0 0 0</pose>
+      <robot_namespace>red</robot_namespace>
+      <contain_topic>entry_z3</contain_topic>
+      <geometry>
+        <box>
+          <size>11.5 15 4.5</size>
+        </box>
+      </geometry>
+      <rate>10</rate>
+    </plugin>
+    <plugin name='ros_contain_gazebo_plugin' filename='libros_contain_gazebo_plugin.so'>
+      <enabled>true</enabled>
+      <entity>red::red/base_link</entity>
+      <namespace>ceiling</namespace>
+      <pose>0 0 5 0 0 0</pose>
+      <robot_namespace>red</robot_namespace>
+      <contain_topic>entry_ceiling</contain_topic>
+      <geometry>
+        <box>
+          <size>25 15 1</size>
+        </box>
+      </geometry>
+      <rate>10</rate>
+    </plugin>
   </world>
 </sdf>
