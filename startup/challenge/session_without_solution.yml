@@ -27,7 +27,7 @@ windows:
           use_sim_time:=true
           enable_magnet:=true
           x:=$UAV_X_E y:=$UAV_Y_E
-          world:=$(rospack find icuas22_evaluator)/worlds/well_lit.world
+          world:=$(rospack find icuas22_competition)/worlds/well_lit.world
         - waitForRos; waitForSimulation; roslaunch icuas22_competition spawn_arena_v7.launch
         - waitForRos; waitForSimulation; sleep 2; roslaunch larics_gazebo_worlds spawn_alvar_tile.launch 
           x:=$TILE_X_E yaw:=$TILE_YAW_E z:=$TILE_Z_E y:=$TILE_Y_E
