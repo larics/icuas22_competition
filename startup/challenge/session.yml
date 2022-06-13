@@ -38,6 +38,7 @@ windows:
           odometry:=odometry
           control_type:=pid_cascade_node_yawrate
           default_params:=custom_config/position_control_thrust.yaml
+          hold_trajectory:=position_hold/final_trajectory
         - |
           waitForRos
           waitForSysStatus
@@ -50,6 +51,9 @@ windows:
       panes:
         - waitForRos; roslaunch uav_ros_tracker topp_tracker.launch 
           tracker_config:=custom_config/topp_config_custom.yaml
+          input_trajectory:=tracker/final_input_trajectory
+          input_pose:=tracker/final_input_pose
+        - waitForRos; roslaunch icuas22_competition safety_node.launch
   - safety:
       layout: tiled
       panes:

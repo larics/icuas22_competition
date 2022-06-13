@@ -1,0 +1,8 @@
+<launch>
+
+    <arg name="namespace"       default="$(env UAV_NAMESPACE)"/>
+    <node pkg="icuas22_competition" type="uav_safety_node" name="uav_safety_node"
+        output="screen" ns="$(arg namespace)">
+    </node>
+
+</launch>
