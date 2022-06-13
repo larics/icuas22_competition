@@ -1,4 +1,5 @@
 topp_tracker:
+  from_odom: False
   sampling_frequency: 100
   n_gridpoints: 500
   request_permission: False
