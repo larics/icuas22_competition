@@ -13,7 +13,7 @@ topp_tracker:
       yaw: 2.5
 
     acceleration:
-      x: 2.75
-      y: 2.75
-      z: 2.75
-      yaw: 1.5
+      x: 0.75
+      y: 0.75
+      z: 0.75
+      yaw: 0.35
