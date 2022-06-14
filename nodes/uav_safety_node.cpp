@@ -78,6 +78,9 @@ private:
   SafetyMachine    m_safety_sm;
   SafetyNodeParams m_safety_params;
 
+  // Set this flag to check the remaining trajectory - only once
+  bool m_got_remaining_trajectory = false;
+
   ros::Subscriber m_position_hold_sub;
   ros::Publisher  m_position_hold_final_pub;
   void position_hold_cb(const trajectory_msgs::MultiDOFJointTrajectoryPoint& msg);
@@ -97,10 +100,6 @@ private:
   ros::ServiceServer m_safety_override_srv;
   bool               safety_override_cb(std_srvs::SetBool::Request&  req,
                                         std_srvs::SetBool::Response& resp);
-
-  static constexpr auto WATCHDOG_RATE = 50.0;
-  ros::Timer            m_traj_watchdog_timer;
-  void                  trajectory_watchdog_cb(const ros::TimerEvent& /*unused*/);
 
   std::mutex         m_trajectory_checker_mutex;
   ros::ServiceClient m_trajectory_checker_client;
@@ -142,9 +141,6 @@ UavSafetyNode::UavSafetyNode(ros::NodeHandle& nh, ros::NodeHandle& nh_private)
     nh.advertiseService("safety/override", &UavSafetyNode::safety_override_cb, this);
   m_tracker_reset_client = nh.serviceClient<std_srvs::Empty>("tracker/reset");
 
-  m_traj_watchdog_timer = nh.createTimer(
-    ros::Duration(1 / WATCHDOG_RATE), &UavSafetyNode::trajectory_watchdog_cb, this);
-
   m_trajectory_checker_client =
     nh.serviceClient<larics_motion_planning::CheckStateValidity>("validity_checker");
 }
@@ -176,21 +172,6 @@ void UavSafetyNode::check_trajectory(const trajectory_msgs::JointTrajectory& tra
         "happen.");
       return;
     }
-  }
-}
-
-void UavSafetyNode::trajectory_watchdog_cb(const ros::TimerEvent& /*unused*/)
-{
-  if (m_safety_sm.isOverride()) {
-    ROS_INFO_THROTTLE(
-      2.0, "[UavSafetyNode::trajectory_watchdog] Current state is OVERRIDE, no danger.");
-    return;
-  }
-
-  if (!m_trajectory_checker_client.exists()) {
-    ROS_WARN_THROTTLE(2.0,
-                      "[UavSafetyNode::trajectory_watchdog] Checker service is missing!");
-    return;
   }
 }
 
@@ -240,7 +221,21 @@ void UavSafetyNode::position_hold_cb(
 void UavSafetyNode::carrot_pose_array_cb(const geometry_msgs::PoseArray& msg)
 {
   ROS_INFO_THROTTLE(3.0, "[UavSafetyNode] Got remaining trajectory.");
-  if (!m_safety_params.check_remaining_trajectory) { return; }
+  if (!m_safety_params.check_remaining_trajectory || !m_got_remaining_trajectory) {
+    m_got_remaining_trajectory = false;
+    return;
+  }
+
+  // Check remaining trajectory
+  trajectory_msgs::JointTrajectory joint_trajectory;
+  std::for_each(msg.poses.begin(), msg.poses.end(), [&](const auto& pose) {
+    joint_trajectory.points.emplace_back(
+      ros_convert::pose_to_joint_trajectory_point(pose));
+  });
+  check_trajectory(joint_trajectory);
+
+  // Check remaining trajectory only once
+  m_got_remaining_trajectory = false;
 }
 
 void UavSafetyNode::tracker_pose_cb(const geometry_msgs::PoseStamped& msg)
@@ -261,6 +256,8 @@ void UavSafetyNode::tracker_pose_cb(const geometry_msgs::PoseStamped& msg)
 
   ROS_INFO_THROTTLE(3.0, "[UavSafetyNode] Forwarding tracker/input_pose");
   m_tracker_pose_final_pub.publish(msg);
+
+  m_got_remaining_trajectory = true;
 }
 
 void UavSafetyNode::tracker_trajectory_cb(
@@ -269,12 +266,10 @@ void UavSafetyNode::tracker_trajectory_cb(
   if (m_safety_params.check_tracker_trajectory) {
     // Check tracker trajectory
     trajectory_msgs::JointTrajectory joint_trajectory;
-    std::for_each(msg.points.begin(),
-                  msg.points.end(),
-                  [&](const trajectory_msgs::MultiDOFJointTrajectoryPoint& point) {
-                    joint_trajectory.points.emplace_back(
-                      ros_convert::trajectory_point_to_joint_trajectory_point(point));
-                  });
+    std::for_each(msg.points.begin(), msg.points.end(), [&](const auto& point) {
+      joint_trajectory.points.emplace_back(
+        ros_convert::trajectory_point_to_joint_trajectory_point(point));
+    });
     check_trajectory(joint_trajectory);
   }
 
@@ -286,6 +281,8 @@ void UavSafetyNode::tracker_trajectory_cb(
 
   ROS_INFO_THROTTLE(3.0, "[UavSafetyNode] Forwarding tracker/input_trajectroy");
   m_tracker_trajectory_final_pub.publish(msg);
+
+  m_got_remaining_trajectory = true;
 }
 
 int main(int argc, char** argv)
