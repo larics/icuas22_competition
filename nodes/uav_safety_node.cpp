@@ -3,6 +3,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/PoseArray.h>
 #include <std_srvs/SetBool.h>
+#include <std_srvs/Empty.h>
 
 enum class SafetyStates { IDLE, OVERRIDE };
 
@@ -80,6 +81,7 @@ private:
   ros::Publisher  m_tracker_trajectory_final_pub;
   void tracker_trajectory_cb(const trajectory_msgs::MultiDOFJointTrajectory& msg);
 
+  ros::ServiceClient m_tracker_reset_client;
   ros::ServiceServer m_safety_override_srv;
   bool               safety_override_cb(std_srvs::SetBool::Request&  req,
                                         std_srvs::SetBool::Response& resp);
@@ -107,12 +109,26 @@ UavSafetyNode::UavSafetyNode(ros::NodeHandle& nh, ros::NodeHandle& nh_private)
 
   m_safety_override_srv =
     nh.advertiseService("safety/override", &UavSafetyNode::safety_override_cb, this);
+  m_tracker_reset_client = nh.serviceClient<std_srvs::Empty>("tracker/reset");
 }
 
 bool UavSafetyNode::safety_override_cb(std_srvs::SetBool::Request&  req,
                                        std_srvs::SetBool::Response& resp)
 {
   m_safety_sm.setState(req.data ? SafetyStates::OVERRIDE : SafetyStates::IDLE);
+
+  // If we are in override now, reset the trajectory
+  if (m_safety_sm.isOverride()) {
+    std_srvs::Empty request;
+    auto            sucess = m_tracker_reset_client.call(request);
+    if (!sucess) {
+      resp.success = false;
+      resp.message = "Current state is: " + m_safety_sm.toString()
+                     + ", unable to stop running trajectory. Beware!";
+      return true;
+    }
+  }
+
   resp.success = true;
   resp.message = "Current state is: " + m_safety_sm.toString();
   return true;
