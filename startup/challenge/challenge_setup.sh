@@ -36,4 +36,4 @@ export TRAJ_CONFIG=$(rospack find icuas22_competition)/config/global_planner.yam
 export STATE_VALIDITY_CONFIG=$(rospack find icuas22_competition)/config/global_planner.yaml
 export PATH_PLANNER_CONFIG=$(rospack find icuas22_competition)/config/global_planner.yaml
 export MODEL_CORRECTION_CONFIG=$(rospack find larics_motion_planning)/config/model_correction_config_example.yaml
-export OCTOMAP_FILE=$(rospack find larics_motion_planning)/config/empty_map.binvox.bt
+export OCTOMAP_FILE=$(rospack find larics_gazebo_worlds)/models/competition/arena_v${ARENA_TYPE}/arena_v${ARENA_TYPE}.binvox.bt

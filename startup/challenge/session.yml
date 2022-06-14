@@ -25,6 +25,7 @@ windows:
           use_sim_time:=true
           enable_magnet:=true
           x:=-10
+          gui:=false
           world:=$(rospack find icuas22_competition)/worlds/well_lit.world
         - waitForRos; waitForSimulation; roslaunch larics_gazebo_worlds spawn_arena_v$ARENA_TYPE.launch
         - waitForRos; waitForSimulation; sleep 2; roslaunch larics_gazebo_worlds spawn_alvar_tile.launch 
@@ -58,3 +59,9 @@ windows:
       layout: tiled
       panes:
         - waitForRos; roslaunch icuas22_competition global_planner.launch
+        - waitForRos; roslaunch icuas22_competition octomap_server.launch
+          map_frame_id:=world
+          base_link_frame_id:=$UAV_NAMESPACE/base_link
+          map_file:=$OCTOMAP_FILE
+        - waitForRos; roslaunch uav_ros_gui rqt.launch 
+          perspective:=$(rospack find icuas22_competition)/config/challenge_layout.perspective
