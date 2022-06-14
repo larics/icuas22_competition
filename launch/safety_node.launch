@@ -1,8 +1,12 @@
 <launch>
 
     <arg name="namespace"       default="$(env UAV_NAMESPACE)"/>
+    <arg name="config"          default="$(find icuas22_competition)/config/safety_config.yaml"/>
+
     <node pkg="icuas22_competition" type="uav_safety_node" name="uav_safety_node"
         output="screen" ns="$(arg namespace)">
+
+        <rosparam command="load"     file="$(arg config)"/>
     </node>
 
 </launch>

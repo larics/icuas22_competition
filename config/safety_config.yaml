@@ -1,0 +1,5 @@
+safety:
+  check_position_hold: true
+  check_tracker_pose: true
+  check_tracker_trajectory: true
+  check_remaining_trajectory: true

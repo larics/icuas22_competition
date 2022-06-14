@@ -219,5 +219,5 @@ state_validity_checker:
   prism:
     x_dimension: 0.8
     y_dimension: 0.8
-    z_dimension: 0.001
+    z_dimension: 0.3
     resolution: 0.2

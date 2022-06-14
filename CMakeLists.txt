@@ -9,6 +9,8 @@ project(icuas22_competition)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS 
     roscpp
+    larics_motion_planning
+    uav_ros_lib
     )
 
 ## System dependencies are found with CMake's conventions
