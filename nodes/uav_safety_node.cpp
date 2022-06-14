@@ -2,6 +2,7 @@
 #include <trajectory_msgs/MultiDOFJointTrajectory.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/PoseArray.h>
+#include <std_msgs/String.h>
 #include <std_srvs/SetBool.h>
 #include <std_srvs/Empty.h>
 #include <larics_motion_planning/CheckStateValidity.h>
@@ -104,6 +105,11 @@ private:
   std::mutex         m_trajectory_checker_mutex;
   ros::ServiceClient m_trajectory_checker_client;
   void               check_trajectory(const trajectory_msgs::JointTrajectory& traj);
+
+  static constexpr auto STATUS_RATE = 20.0;
+  ros::Timer            m_status_timer;
+  ros::Publisher        m_status_pub;
+  void                  status_timer_cb(const ros::TimerEvent& /*event*/);
 };
 
 UavSafetyNode::UavSafetyNode(ros::NodeHandle& nh, ros::NodeHandle& nh_private)
@@ -143,8 +149,18 @@ UavSafetyNode::UavSafetyNode(ros::NodeHandle& nh, ros::NodeHandle& nh_private)
 
   m_trajectory_checker_client =
     nh.serviceClient<larics_motion_planning::CheckStateValidity>("validity_checker");
+
+  m_status_pub   = nh.advertise<std_msgs::String>("safety/status", 1);
+  m_status_timer = nh.createTimer(
+    ros::Duration(1.0 / STATUS_RATE), &UavSafetyNode::status_timer_cb, this);
 }
 
+void UavSafetyNode::status_timer_cb(const ros::TimerEvent& /*event*/)
+{
+  std_msgs::String safety_status;
+  safety_status.data = m_safety_sm.toString();
+  m_status_pub.publish(safety_status);
+}
 void UavSafetyNode::check_trajectory(const trajectory_msgs::JointTrajectory& traj)
 {
   larics_motion_planning::CheckStateValidity state_validity;
