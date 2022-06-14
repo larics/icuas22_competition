@@ -1,0 +1,44 @@
+name: icuas_ch
+root: ./
+startup_window: roscore
+pre_window: |
+  export UAV_NAMESPACE=red;
+  export ARENA_TYPE=<%= @settings["arena"]%>;
+  source challenge_setup_rw.sh
+windows:
+  - roscore:
+      layout:
+      panes:
+        - roscore
+        - waitForRos; roslaunch uav_ros_general apm2.launch fcu_url:=$PIX_SYM
+        - waitForRos; waitForMavros; sleep 10; rosrun mavros mavsys -n $UAV_NAMESPACE/mavros rate --all 50
+        - roslaunch uav_ros_general optitrack.launch object_name:=$OBJECT_NAME ip:=$OPTITRACK_IP
+  - arm&takeof:
+      layout: tiled
+      panes:
+        - waitForRos; roslaunch uav_ros_control pid_carrot.launch 
+          manual_takeoff:=false
+          msf_callback_enable:=true
+          odometry:=$ODOM_TOPIC
+          control_type:=pid_cascade_node_yawrate
+          default_params:=custom_config/position_control_thrust_tuned.yaml
+          hold_trajectory:=position_hold/final_trajectory
+          carrot_land:=true
+          land_disarm_enabled:=true
+        - waitForRos; roslaunch uav_ros_control uav_manager.launch odometry:=$ODOM_TOPIC
+  - trajectory:
+      layout: tiled
+      panes:
+        - waitForRos; roslaunch uav_ros_tracker topp_tracker.launch 
+          tracker_config:=custom_config/topp_config_custom.yaml
+          input_trajectory:=tracker/final_input_trajectory
+          input_pose:=tracker/final_input_pose
+        - waitForRos; roslaunch icuas22_competition safety_node.launch
+  - safety:
+      layout: tiled
+      panes:
+        - waitForRos; roslaunch icuas22_competition global_planner.launch
+        - waitForRos; roslaunch icuas22_competition octomap_server.launch
+          map_frame_id:=world
+          base_link_frame_id:=$UAV_NAMESPACE/base_link
+          map_file:=$OCTOMAP_FILE

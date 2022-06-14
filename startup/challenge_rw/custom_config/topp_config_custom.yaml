@@ -1,0 +1,19 @@
+topp_tracker:
+  from_odom: False
+  sampling_frequency: 100
+  n_gridpoints: 500
+  request_permission: False
+
+  constraints:
+
+    velocity:
+      x: 2
+      y: 2
+      z: 2
+      yaw: 0.5
+
+    acceleration:
+      x: 0.25
+      y: 0.25
+      z: 0.25
+      yaw: 0.15
