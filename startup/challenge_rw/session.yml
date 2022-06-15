@@ -12,7 +12,7 @@ windows:
         - roscore
         - waitForRos; roslaunch uav_ros_general apm2.launch fcu_url:=$PIX_SYM
         - waitForRos; waitForMavros; sleep 10; rosrun mavros mavsys -n $UAV_NAMESPACE/mavros rate --all 50
-        - roslaunch uav_ros_general optitrack.launch object_name:=$OBJECT_NAME ip:=$OPTITRACK_IP
+        - waitForRos; roslaunch uav_ros_general optitrack.launch object_name:=$OBJECT_NAME ip:=$OPTITRACK_IP
   - arm&takeof:
       layout: tiled
       panes:
@@ -25,7 +25,7 @@ windows:
           hold_trajectory:=position_hold/final_trajectory
           carrot_land:=true
           land_disarm_enabled:=true
-        - waitForRos; roslaunch uav_ros_control uav_manager.launch odometry:=$ODOM_TOPIC
+        - history -s "waitForRos; roslaunch uav_ros_control uav_manager.launch odometry:=$ODOM_TOPIC"
   - trajectory:
       layout: tiled
       panes:
