@@ -43,6 +43,6 @@ windows:
       panes:
         - waitForRos; roslaunch icuas22_competition global_planner.launch
         - waitForRos; roslaunch icuas22_competition octomap_server.launch
-          map_frame_id:=world
-          base_link_frame_id:=$UAV_NAMESPACE/base_link
+          map_frame_id:=$MAP_FRAME
+          base_link_frame_id:=$BASE_LINK
           map_file:=$OCTOMAP_FILE
