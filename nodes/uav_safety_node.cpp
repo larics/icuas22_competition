@@ -8,6 +8,7 @@
 #include <larics_motion_planning/CheckStateValidity.h>
 #include <uav_ros_lib/ros_convert.hpp>
 #include <uav_ros_lib/param_util.hpp>
+#include <mutex>
 
 enum class SafetyStates { IDLE, OVERRIDE };
 
