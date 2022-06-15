@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<robot name="robot" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:arg name="namespace" default="none"/>
+  <xacro:property name="namespace" value="$(arg namespace)"/>
+
+  <xacro:arg name="camera_link" default="none"/>
+  <xacro:property name="camera_link" value="$(arg camera_link)" />
+
+  <xacro:arg name="base_link" default="base_link"/>
+  <xacro:property name="base_link" value="$(arg base_link)" />
+
+  <material name="orange">
+    <color rgba="1.0 0.5 0.2 1" />
+  </material>
+
+  <material name="gray">
+    <color rgba="0.2 0.2 0.2 1" />
+  </material>
+
+  <link name="${base_link}">
+    <visual>
+      <origin xyz="0.0 0.0 0.0" />
+      <geometry>
+        <box size="0.06 0.04 0.02" />
+      </geometry>
+      <material name="orange" />
+    </visual>
+  </link>
+
+  <link name="${camera_link}">
+    <visual>
+      <origin xyz="0.0 0.0 0.0" />
+      <geometry>
+        <box size="0.06 0.04 0.02" />
+      </geometry>
+      <material name="orange" />
+    </visual>
+  </link>
+
+  <link name="${namespace}/base_link" />
+
+  <joint name="${namespace}/base_link_joint" type="fixed">
+    <parent link="${base_link}" />
+    <child link="${namespace}/base_link" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
+  
+  <joint name="${namespace}/camera_link_joint" type="fixed">
+    <parent link="${namespace}/base_link" />
+    <child link="${camera_link}" />
+    <origin xyz="0.08 0. -0.1578" rpy="0 0.27284641020683 0." />
+  </joint>
+  
+</robot>
+
+

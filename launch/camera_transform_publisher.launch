@@ -1,0 +1,16 @@
+<launch>
+  <arg name="namespace"   default="$(env UAV_NAMESPACE)"/>
+  <arg name="base_link"   default="base_link"/>
+  <arg name="camera_link" default="camera_link"/>
+  <arg name="urdf"        default="$(find icuas22_competition)/urdf/baselink-camera.urdf.xacro"/>
+
+  <param name="$(arg namespace)/robot_description" 
+         command="$(find xacro)/xacro --inorder $(arg urdf) 
+	 namespace:=$(arg namespace)
+	 base_link:=$(arg base_link)
+	 camera_link:=$(arg camera_link)"/>
+
+  <node name="robot_state_publisher" pkg="robot_state_publisher"
+    type="robot_state_publisher" ns="$(arg namespace)" output="screen"/>
+</launch>
+

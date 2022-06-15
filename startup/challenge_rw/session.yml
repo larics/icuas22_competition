@@ -2,7 +2,6 @@ name: icuas_ch
 root: ./
 startup_window: roscore
 pre_window: |
-  export UAV_NAMESPACE=red;
   export ARENA_TYPE=<%= @settings["arena"]%>;
   source challenge_setup_rw.sh
 windows:
@@ -12,7 +11,12 @@ windows:
         - roscore
         - waitForRos; roslaunch uav_ros_general apm2.launch fcu_url:=$PIX_SYM
         - waitForRos; waitForMavros; sleep 10; rosrun mavros mavsys -n $UAV_NAMESPACE/mavros rate --all 50
-        - waitForRos; roslaunch uav_ros_general optitrack.launch object_name:=$OBJECT_NAME ip:=$OPTITRACK_IP
+        - waitForRos; roslaunch uav_ros_general optitrack.launch object_name:=$OBJECT_NAME ip:=$OPTITRACK_IP    
+        - waitForRos; roslaunch realsense2_camera rs_rgbd.launch
+          camera:=$CAMERA_LINK
+        - waitForRos; roslaunch icuas22_competition camera_transform_publisher.launch
+          base_link:=$OBJECT_NAME
+          camera_link:=${CAMERA_LINK}_link
   - arm&takeof:
       layout: tiled
       panes:

@@ -40,10 +40,13 @@ export MODEL_CORRECTION_CONFIG=$(rospack find larics_motion_planning)/config/mod
 export OCTOMAP_FILE=$(rospack find larics_gazebo_worlds)/models/competition/arena_v${ARENA_TYPE}/arena_v${ARENA_TYPE}.binvox.bt
 
 # Optitrack parameters
-export OBJECT_NAME=base_link
+export OBJECT_NAME=hawk2
 export ODOM_TOPIC=/$OBJECT_NAME/vrpn/estimated_odometry
 export OPTITRACK_IP=192.168.1.50
 
 # Pixhawk
 export UAV_NAMESPACE=red
 export PIX_SYM=/dev/ttyUSB_px4:921600
+
+# Camera parameters
+export CAMERA_LINK=$UAV_NAMESPACE/camera
