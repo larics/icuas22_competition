@@ -39,6 +39,12 @@ windows:
           control_type:=pid_cascade_node_yawrate
           default_params:=custom_config/position_control_thrust_update.yaml
           hold_trajectory:=position_hold/final_trajectory
+          carrot_land:=true
+          land_disarm_enabled:=true
+          geofence_enabled:=true
+          geofence_config:=$(pwd)/custom_config/geofence_config.yaml
+          carrot_out:=carrot/trajectory_fence
+        - waitForRos; roslaunch uav_ros_control uav_manager.launch odometry:=odometry
         - |
           waitForRos
           waitForSysStatus
