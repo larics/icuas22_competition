@@ -12,6 +12,7 @@ windows:
         - waitForRos; roslaunch uav_ros_general apm2.launch fcu_url:=$PIX_SYM
         - waitForRos; waitForMavros; sleep 10; rosrun mavros mavsys -n $UAV_NAMESPACE/mavros rate --all 50
         - waitForRos; roslaunch uav_ros_general optitrack.launch object_name:=$OBJECT_NAME ip:=$OPTITRACK_IP    
+        - waitForRos; roslaunch uav_ros_general rc_to_joy.launch
         - waitForRos; roslaunch realsense2_camera rs_rgbd.launch
           camera:=$CAMERA_LINK
         - waitForRos; roslaunch icuas22_competition camera_transform_publisher.launch
@@ -27,6 +28,7 @@ windows:
           control_type:=pid_cascade_node_yawrate
           default_params:=custom_config/position_control_thrust_tuned.yaml
           hold_trajectory:=position_hold/final_trajectory
+          carrot_frame_id:=$MAP_FRAME
           carrot_land:=true
           land_disarm_enabled:=true
           geofence_enabled:=true
@@ -48,3 +50,10 @@ windows:
           map_frame_id:=$MAP_FRAME
           base_link_frame_id:=$BASE_LINK
           map_file:=$OCTOMAP_FILE
+  - magnet:
+      layout: tiled
+      panes:
+        - waitForRos; rosrun rosserial_python serial_node.py 
+          _port:=/dev/ttyUSB_arduino
+          __ns:=$UAV_NAMESPACE
+
