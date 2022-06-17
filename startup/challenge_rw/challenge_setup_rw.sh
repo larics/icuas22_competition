@@ -41,7 +41,7 @@ export OCTOMAP_FILE=$(pwd)/custom_config/icuas2022_arena_latest.binvox.bt
 
 # Optitrack parameters
 export OBJECT_NAME=hawk2
-export ODOM_TOPIC=/$OBJECT_NAME/vrpn/estimated_odometry
+export ODOM_TOPIC=/$OBJECT_NAME/vrpn_client/estimated_odometry
 export OPTITRACK_IP=192.168.1.50
 
 # Pixhawk
