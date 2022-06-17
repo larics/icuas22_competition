@@ -1,0 +1,28 @@
+frame_id: "optitrack"
+
+max_alt: 3
+min_alt: 0.5
+
+gps_constraints:
+#  - lat: 24.41773
+#    lon: 54.43563
+#    alt: 7
+#  - lat: 24.41762
+#    lon: 54.43557
+#    alt: 7
+#  - lat: 24.41757
+#    lon: 54.43578
+#    alt: 7
+#  - lat: 24.41769
+#    lon: 54.4358
+#    alt: 7
+
+local_constraints:
+  - x: -11.6
+    y: 6.31
+  - x: -11.5
+    y: -6.3
+  - x: 11.3
+    y: -6.3
+  - x: 11
+    y: 6
