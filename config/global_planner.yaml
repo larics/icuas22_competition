@@ -185,12 +185,12 @@ trajectory_planner:
 
 state_validity_checker:
   # State validity checker examples. Note that type can also be point.
-  type: "prism"
+  type: "ball"
 
   # If ball is selected a set of concentric spheres will be generated for
   # state validity checking.
   ball:
-    radius: 0.4
+    radius: 0.5
     resolution: 0.1
 
   # Just one sphere
