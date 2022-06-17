@@ -1,8 +1,5 @@
 frame_id: "world"
 
-max_jump: 1
-jump_constant: 0.01
-
 max_alt: 3
 min_alt: 0.5
 

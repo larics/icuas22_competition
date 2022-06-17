@@ -43,7 +43,6 @@ windows:
           land_disarm_enabled:=true
           geofence_enabled:=true
           geofence_config:=$(pwd)/custom_config/geofence_config.yaml
-          carrot_out:=carrot/trajectory_fence
         - waitForRos; roslaunch uav_ros_control uav_manager.launch odometry:=odometry
         - |
           waitForRos

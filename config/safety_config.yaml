@@ -1,4 +1,6 @@
 safety:
+  max_jump: 1.0
+
   check_position_hold: true
   check_tracker_pose: true
   check_tracker_trajectory: true

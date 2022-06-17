@@ -4,10 +4,12 @@
 #include <geometry_msgs/PoseArray.h>
 #include <std_msgs/String.h>
 #include <std_srvs/SetBool.h>
+#include <std_msgs/Bool.h>
 #include <std_srvs/Empty.h>
 #include <larics_motion_planning/CheckStateValidity.h>
 #include <uav_ros_lib/ros_convert.hpp>
 #include <uav_ros_lib/param_util.hpp>
+#include <uav_ros_lib/trajectory/trajectory_helper.hpp>
 #include <mutex>
 
 enum class SafetyStates { IDLE, OVERRIDE };
@@ -65,10 +67,12 @@ private:
 
 struct SafetyNodeParams
 {
-  bool check_position_hold        = true;
-  bool check_tracker_pose         = true;
-  bool check_tracker_trajectory   = true;
-  bool check_remaining_trajectory = true;
+  bool   check_position_hold        = true;
+  bool   check_tracker_pose         = true;
+  bool   check_tracker_trajectory   = true;
+  bool   check_remaining_trajectory = true;
+  bool   check_carrot_trajectory    = true;
+  double max_jump                   = 1.0;
 };
 
 class UavSafetyNode
@@ -98,6 +102,11 @@ private:
   ros::Publisher  m_tracker_trajectory_final_pub;
   void tracker_trajectory_cb(const trajectory_msgs::MultiDOFJointTrajectory& msg);
 
+  ros::Subscriber                               m_carrot_trajectory_sub;
+  trajectory_msgs::MultiDOFJointTrajectoryPoint m_carrot_trajectory;
+  std::mutex                                    m_carrot_trajectory_mutex;
+  void carrot_trajectory_cb(const trajectory_msgs::MultiDOFJointTrajectoryPoint& msg);
+
   ros::ServiceClient m_tracker_reset_client;
   ros::ServiceServer m_safety_override_srv;
   bool               safety_override_cb(std_srvs::SetBool::Request&  req,
@@ -125,14 +134,18 @@ UavSafetyNode::UavSafetyNode(ros::NodeHandle& nh, ros::NodeHandle& nh_private)
   param_util::getParamOrThrow(nh_private,
                               "safety/check_remaining_trajectory",
                               m_safety_params.check_remaining_trajectory);
+  param_util::getParamOrThrow(nh_private, "safety/max_jump", m_safety_params.max_jump);
 
   m_carrot_pose_array_sub = nh.subscribe(
     "tracker/remaining_trajectory", 1, &UavSafetyNode::carrot_pose_array_cb, this);
 
   m_position_hold_final_pub = nh.advertise<trajectory_msgs::MultiDOFJointTrajectoryPoint>(
     "position_hold/final_trajectory", 1);
-  m_position_hold_sub =
-    nh.subscribe("position_hold/trajectory", 1, &UavSafetyNode::position_hold_cb, this);
+  m_position_hold_sub = nh.subscribe(
+    "position_hold/trajectory_fenced", 1, &UavSafetyNode::position_hold_cb, this);
+
+  m_carrot_trajectory_sub =
+    nh.subscribe("carrot/trajectory", 1, &UavSafetyNode::carrot_trajectory_cb, this);
 
   m_tracker_pose_final_pub =
     nh.advertise<geometry_msgs::PoseStamped>("tracker/final_input_pose", 1);
@@ -162,6 +175,14 @@ void UavSafetyNode::status_timer_cb(const ros::TimerEvent& /*event*/)
   safety_status.data = m_safety_sm.toString();
   m_status_pub.publish(safety_status);
 }
+
+void UavSafetyNode::carrot_trajectory_cb(
+  const trajectory_msgs::MultiDOFJointTrajectoryPoint& msg)
+{
+  std::lock_guard<std::mutex> lock(m_carrot_trajectory_mutex);
+  m_carrot_trajectory = msg;
+}
+
 void UavSafetyNode::check_trajectory(const trajectory_msgs::JointTrajectory& traj)
 {
   larics_motion_planning::CheckStateValidity state_validity;
@@ -217,11 +238,34 @@ bool UavSafetyNode::safety_override_cb(std_srvs::SetBool::Request&  req,
 void UavSafetyNode::position_hold_cb(
   const trajectory_msgs::MultiDOFJointTrajectoryPoint& msg)
 {
+  trajectory_msgs::MultiDOFJointTrajectoryPoint current;
+  {
+    std::lock_guard<std::mutex> lock(m_carrot_trajectory_mutex);
+    current = m_carrot_trajectory;
+  }
+
+  // Interpolate and check trajectory if jumping too far
+  const auto dist = trajectory_helper::distance(current.transforms.front().translation,
+                                                msg.transforms.front().translation);
+
   if (m_safety_params.check_position_hold) {
-    // First check the trajectory
     trajectory_msgs::JointTrajectory joint_trajectory;
-    joint_trajectory.points.emplace_back(ros_convert::pose_to_joint_trajectory_point(
-      ros_convert::trajectory_point_to_pose(msg)));
+
+    // Interpolate to check points between current reference and goal
+    if (dist > m_safety_params.max_jump) {
+      ROS_INFO("[UavSafetyNode] Checking jump - position_hold/trajectory");
+      joint_trajectory.points.emplace_back(
+        ros_convert::trajectory_point_to_joint_trajectory_point(current));
+      joint_trajectory.points.emplace_back(
+        ros_convert::trajectory_point_to_joint_trajectory_point(msg));
+      joint_trajectory =
+        trajectory_helper::interpolate_points(joint_trajectory, 0.1, 0.1);
+
+    } else {
+      // Just check the new goal point
+      joint_trajectory.points.emplace_back(ros_convert::pose_to_joint_trajectory_point(
+        ros_convert::trajectory_point_to_pose(msg)));
+    }
     check_trajectory(joint_trajectory);
   }
 
@@ -237,11 +281,13 @@ void UavSafetyNode::position_hold_cb(
 
 void UavSafetyNode::carrot_pose_array_cb(const geometry_msgs::PoseArray& msg)
 {
-  ROS_INFO_THROTTLE(3.0, "[UavSafetyNode] Got remaining trajectory.");
   if (!m_safety_params.check_remaining_trajectory || !m_got_remaining_trajectory) {
     m_got_remaining_trajectory = false;
     return;
   }
+
+  ROS_INFO_THROTTLE(3.0, "[UavSafetyNode] Checking remaining trajectory.");
+
 
   // Check remaining trajectory
   trajectory_msgs::JointTrajectory joint_trajectory;
