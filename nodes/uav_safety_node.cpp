@@ -1,3 +1,4 @@
+#include "trajectory_msgs/MultiDOFJointTrajectoryPoint.h"
 #include <ros/ros.h>
 #include <trajectory_msgs/MultiDOFJointTrajectory.h>
 #include <geometry_msgs/PoseStamped.h>
@@ -10,6 +11,7 @@
 #include <uav_ros_lib/ros_convert.hpp>
 #include <uav_ros_lib/param_util.hpp>
 #include <uav_ros_lib/trajectory/trajectory_helper.hpp>
+#include <tf2/LinearMath/Quaternion.h>
 #include <mutex>
 
 enum class SafetyStates { IDLE, OVERRIDE };
@@ -62,7 +64,7 @@ public:
 
 private:
   std::mutex   m_state_mutex;
-  SafetyStates m_current_state = SafetyStates::IDLE;
+  SafetyStates m_current_state = SafetyStates::OVERRIDE;
 };
 
 struct SafetyNodeParams
@@ -72,6 +74,7 @@ struct SafetyNodeParams
   bool   check_tracker_trajectory   = true;
   bool   check_remaining_trajectory = true;
   bool   check_carrot_trajectory    = true;
+  bool   smooth_position_hold       = true;
   double max_jump                   = 1.0;
 };
 
@@ -87,8 +90,10 @@ private:
   // Set this flag to check the remaining trajectory - only once
   bool m_got_remaining_trajectory = false;
 
-  ros::Subscriber m_position_hold_sub;
-  ros::Publisher  m_position_hold_final_pub;
+  ros::Subscriber                               m_position_hold_sub;
+  ros::Publisher                                m_position_hold_final_pub;
+  trajectory_msgs::MultiDOFJointTrajectoryPoint m_position_hold;
+  std::mutex                                    m_position_hold_mutex;
   void position_hold_cb(const trajectory_msgs::MultiDOFJointTrajectoryPoint& msg);
 
   ros::Subscriber m_carrot_pose_array_sub;
@@ -120,6 +125,15 @@ private:
   ros::Timer            m_status_timer;
   ros::Publisher        m_status_pub;
   void                  status_timer_cb(const ros::TimerEvent& /*event*/);
+
+  static constexpr auto REPUBLISHER_RATE = 50.0;
+  ros::Timer            m_republisher_timer;
+  void                  republisher_cb(const ros::TimerEvent& /* unused */);
+
+  ros::Subscriber m_carrot_status_sub;
+  void            carrot_status_cb(const std_msgs::String& msg);
+
+  ros::ServiceClient m_position_hold_client;
 };
 
 UavSafetyNode::UavSafetyNode(ros::NodeHandle& nh, ros::NodeHandle& nh_private)
@@ -135,6 +149,8 @@ UavSafetyNode::UavSafetyNode(ros::NodeHandle& nh, ros::NodeHandle& nh_private)
                               "safety/check_remaining_trajectory",
                               m_safety_params.check_remaining_trajectory);
   param_util::getParamOrThrow(nh_private, "safety/max_jump", m_safety_params.max_jump);
+  param_util::getParamOrThrow(
+    nh_private, "safety/smooth_position_hold", m_safety_params.smooth_position_hold);
 
   m_carrot_pose_array_sub = nh.subscribe(
     "tracker/remaining_trajectory", 1, &UavSafetyNode::carrot_pose_array_cb, this);
@@ -157,9 +173,13 @@ UavSafetyNode::UavSafetyNode(ros::NodeHandle& nh, ros::NodeHandle& nh_private)
   m_tracker_trajectory_sub = nh.subscribe(
     "tracker/input_trajectory", 1, &UavSafetyNode::tracker_trajectory_cb, this);
 
+  m_carrot_status_sub =
+    nh.subscribe("carrot/status", 1, &UavSafetyNode::carrot_status_cb, this);
+
   m_safety_override_srv =
     nh.advertiseService("safety/override", &UavSafetyNode::safety_override_cb, this);
   m_tracker_reset_client = nh.serviceClient<std_srvs::Empty>("tracker/reset");
+  m_position_hold_client = nh.serviceClient<std_srvs::Empty>("position_hold");
 
   m_trajectory_checker_client =
     nh.serviceClient<larics_motion_planning::CheckStateValidity>("validity_checker");
@@ -167,6 +187,82 @@ UavSafetyNode::UavSafetyNode(ros::NodeHandle& nh, ros::NodeHandle& nh_private)
   m_status_pub   = nh.advertise<std_msgs::String>("safety/status", 1);
   m_status_timer = nh.createTimer(
     ros::Duration(1.0 / STATUS_RATE), &UavSafetyNode::status_timer_cb, this);
+  m_republisher_timer = nh.createTimer(
+    ros::Duration(1.0 / REPUBLISHER_RATE), &UavSafetyNode::republisher_cb, this);
+}
+
+void UavSafetyNode::carrot_status_cb(const std_msgs::String& msg)
+{
+  if (msg.data != "HOLD" && m_safety_sm.isIdle()) {
+    ROS_INFO("[UAVSafetyNode] HOLD disabled - override on.");
+    m_safety_sm.setState(SafetyStates::OVERRIDE);
+  }
+}
+
+void UavSafetyNode::republisher_cb(const ros::TimerEvent& /* unused */)
+{
+
+  if (m_safety_sm.isOverride()) {
+    ROS_WARN_THROTTLE(
+      2.0,
+      "[UavSafetyNode] Override enabled. position_hold/trajectory republisher rejected");
+    return;
+  }
+
+  trajectory_msgs::MultiDOFJointTrajectoryPoint current;
+  {
+    std::lock_guard<std::mutex> lock(m_carrot_trajectory_mutex);
+    current = m_carrot_trajectory;
+  }
+
+  trajectory_msgs::MultiDOFJointTrajectoryPoint ref;
+  {
+    std::lock_guard<std::mutex> lock(m_position_hold_mutex);
+    ref = m_position_hold;
+  }
+
+  if (current.transforms.empty() || ref.transforms.empty()) {
+    ROS_WARN_ONCE("[UavSafetyNode] republisher - not recieved data.");
+    return;
+  }
+
+  const auto dist = trajectory_helper::distance(current.transforms.front().translation,
+                                                ref.transforms.front().translation);
+  if (m_safety_params.smooth_position_hold && dist > m_safety_params.max_jump) {
+    // Filter the max jump
+    double _jump_constant = 0.01;
+    ROS_WARN_THROTTLE(0.5, "[UavSafetyNode] JUMP with distance %.3f. Smoothing...", dist);
+    current.transforms.front().translation.x =
+      current.transforms.front().translation.x * (1 - _jump_constant)
+      + ref.transforms.front().translation.x * _jump_constant;
+    current.transforms.front().translation.y =
+      current.transforms.front().translation.y * (1 - _jump_constant)
+      + ref.transforms.front().translation.y * _jump_constant;
+    current.transforms.front().translation.z =
+      current.transforms.front().translation.z * (1 - _jump_constant)
+      + ref.transforms.front().translation.z * _jump_constant;
+
+    // Interpolate angles
+    tf2::Quaternion old_q(current.transforms.front().rotation.x,
+                          current.transforms.front().rotation.y,
+                          current.transforms.front().rotation.z,
+                          current.transforms.front().rotation.w);
+
+    tf2::Quaternion new_q(ref.transforms.front().rotation.x,
+                          ref.transforms.front().rotation.y,
+                          ref.transforms.front().rotation.z,
+                          ref.transforms.front().rotation.w);
+
+    auto slerperd_q                       = old_q.slerp(new_q, _jump_constant);
+    current.transforms.front().rotation.x = slerperd_q.x();
+    current.transforms.front().rotation.y = slerperd_q.y();
+    current.transforms.front().rotation.z = slerperd_q.z();
+    current.transforms.front().rotation.w = slerperd_q.w();
+  } else {
+    current = ref;
+  }
+
+  m_position_hold_final_pub.publish(current);
 }
 
 void UavSafetyNode::status_timer_cb(const ros::TimerEvent& /*event*/)
@@ -232,6 +328,17 @@ bool UavSafetyNode::safety_override_cb(std_srvs::SetBool::Request&  req,
 
   resp.success = true;
   resp.message = "Current state is: " + m_safety_sm.toString();
+  if (m_safety_sm.isIdle()) { 
+    m_position_hold = m_carrot_trajectory; 
+
+    std_srvs::Empty position_hold_srv;
+    auto response = m_position_hold_client.call(position_hold_srv);
+    if (!response)
+    {
+      ROS_FATAL("[UAVSafetyNode] unable to call position hold.");
+      return true;
+    }
+  }
   return true;
 }
 
@@ -275,8 +382,10 @@ void UavSafetyNode::position_hold_cb(
     return;
   }
 
-  ROS_INFO_THROTTLE(3.0, "[UavSafetyNode] Forwarding position_hold/trajectory!");
-  m_position_hold_final_pub.publish(msg);
+  {
+    std::lock_guard<std::mutex> lock(m_position_hold_mutex);
+    m_position_hold = msg;
+  }
 }
 
 void UavSafetyNode::carrot_pose_array_cb(const geometry_msgs::PoseArray& msg)

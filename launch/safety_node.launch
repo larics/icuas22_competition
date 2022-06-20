@@ -4,7 +4,7 @@
     <arg name="config"          default="$(find icuas22_competition)/config/safety_config.yaml"/>
 
     <node pkg="icuas22_competition" type="uav_safety_node" name="uav_safety_node"
-        output="screen" ns="$(arg namespace)">
+        output="screen" ns="$(arg namespace)" launch-prefix="">
 
         <rosparam command="load"     file="$(arg config)"/>
     </node>
