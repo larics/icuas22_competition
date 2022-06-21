@@ -32,7 +32,7 @@ windows:
           carrot_land:=true
           land_disarm_enabled:=true
           geofence_enabled:=true
-          geofence_config:=$(pwd)/custom_config/geofence_config.yaml
+          geofence_config:=$GEOFENCE_CONFIG
         - history -s "waitForRos; roslaunch uav_ros_control uav_manager.launch odometry:=$ODOM_TOPIC"
   - trajectory:
       layout: tiled
