@@ -230,7 +230,7 @@ void UavSafetyNode::republisher_cb(const ros::TimerEvent& /* unused */)
                                                 ref.transforms.front().translation);
   if (m_safety_params.smooth_position_hold && dist > m_safety_params.max_jump) {
     // Filter the max jump
-    double _jump_constant = 0.01;
+    double _jump_constant = 0.03;
     ROS_WARN_THROTTLE(0.5, "[UavSafetyNode] JUMP with distance %.3f. Smoothing...", dist);
     current.transforms.front().translation.x =
       current.transforms.front().translation.x * (1 - _jump_constant)
