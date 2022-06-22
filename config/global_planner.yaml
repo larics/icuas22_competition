@@ -65,7 +65,7 @@ octomap:
   # Search depth of octomap tree. 16 is best resolution, slowest search(although
   # experience shows that there is no significant increase in search time by 
   # setting this parameter to < 16)
-  search_depth: 14
+  search_depth: 16
 
 path_planner:
   spaces:
