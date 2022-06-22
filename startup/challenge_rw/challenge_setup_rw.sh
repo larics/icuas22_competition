@@ -39,10 +39,10 @@ export PATH_PLANNER_CONFIG=$(rospack find icuas22_competition)/config/global_pla
 export MODEL_CORRECTION_CONFIG=$(rospack find larics_motion_planning)/config/model_correction_config_example.yaml
 
 # Empty map
-export OCTOMAP_FILE=$(rospack find larics_motion_planning)/config/empty_map.binvox.bt
+#export OCTOMAP_FILE=$(rospack find larics_motion_planning)/config/empty_map.binvox.bt
 
 # Uncomment this if using a real map
-# export OCTOMAP_FILE=$(pwd)/custom_config/icuas2022_arena_latest.binvox.bt
+export OCTOMAP_FILE=$(pwd)/custom_config/icuas2022_arena_latest.binvox.bt
 
 
 # Optitrack parameters

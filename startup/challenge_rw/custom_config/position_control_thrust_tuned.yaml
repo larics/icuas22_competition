@@ -17,8 +17,8 @@ control:
     kp: 1.1
     ki: 0.01
     kd: 0.0
-    lim_low: -2
-    lim_high: 2
+    lim_low: -3
+    lim_high: 3
 
   vel_x:
     kp: 0.28
@@ -31,8 +31,8 @@ control:
     kp: 1.1
     ki: 0.01
     kd: 0.0
-    lim_low: -2
-    lim_high: 2
+    lim_low: -3
+    lim_high: 3
 
   vel_y:
     kp: 0.28
