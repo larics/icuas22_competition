@@ -57,4 +57,10 @@ windows:
         - waitForRos; rosrun rosserial_python serial_node.py 
           _port:=/dev/ttyUSB_arduino
           __ns:=$UAV_NAMESPACE
+  - transforms:
+      layout: tiled
+      panes:
+        - waitForRos; rosrun tf static_transform_publisher 0 0 0 0 0 0 world optitrack 10
+        - waitForRos; rosrun tf static_transform_publisher 0 0 0 0 0 0 red/camera_color_optical_frame red/camera 10
+
 
