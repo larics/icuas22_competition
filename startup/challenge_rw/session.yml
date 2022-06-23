@@ -62,5 +62,9 @@ windows:
       panes:
         - waitForRos; rosrun tf static_transform_publisher 0 0 0 0 0 0 world optitrack 10
         - waitForRos; rosrun tf static_transform_publisher 0 0 0 0 0 0 red/camera_color_optical_frame red/camera 10
+        - waitForRos; rosrun larics_motion_planning visualize_joint_trajectory_as_marker_array.py
+          __ns:=$UAV_NAMESPACE 
+          joint_trajectory:=debug/collision_trajectory 
+          visualization/multiple_trajectories:=debug/collision_marker 
 
 

@@ -69,3 +69,7 @@ windows:
           map_file:=$OCTOMAP_FILE
         - waitForRos; roslaunch uav_ros_gui rqt.launch 
           perspective:=$(rospack find icuas22_competition)/config/challenge_layout.perspective
+        - waitForRos; rosrun larics_motion_planning visualize_joint_trajectory_as_marker_array.py
+          __ns:=$UAV_NAMESPACE 
+          joint_trajectory:=debug/collision_trajectory 
+          visualization/multiple_trajectories:=debug/collision_marker

@@ -1,3 +1,4 @@
+#include "trajectory_msgs/JointTrajectory.h"
 #include "trajectory_msgs/MultiDOFJointTrajectoryPoint.h"
 #include <ros/ros.h>
 #include <trajectory_msgs/MultiDOFJointTrajectory.h>
@@ -134,6 +135,7 @@ private:
   void            carrot_status_cb(const std_msgs::String& msg);
 
   ros::ServiceClient m_position_hold_client;
+  ros::Publisher     m_debug_collision;
 };
 
 UavSafetyNode::UavSafetyNode(ros::NodeHandle& nh, ros::NodeHandle& nh_private)
@@ -167,6 +169,8 @@ UavSafetyNode::UavSafetyNode(ros::NodeHandle& nh, ros::NodeHandle& nh_private)
     nh.advertise<geometry_msgs::PoseStamped>("tracker/final_input_pose", 1);
   m_tracker_pose_sub =
     nh.subscribe("tracker/input_pose", 1, &UavSafetyNode::tracker_pose_cb, this);
+  m_debug_collision =
+    nh.advertise<trajectory_msgs::JointTrajectory>("debug/collision_trajectory", 1);
 
   m_tracker_trajectory_final_pub = nh.advertise<trajectory_msgs::MultiDOFJointTrajectory>(
     "tracker/final_input_trajectory", 1);
@@ -306,6 +310,8 @@ void UavSafetyNode::check_trajectory(const trajectory_msgs::JointTrajectory& tra
         "happen.");
       return;
     }
+
+    m_debug_collision.publish(state_validity.request.points);
   }
 }
 
@@ -328,13 +334,12 @@ bool UavSafetyNode::safety_override_cb(std_srvs::SetBool::Request&  req,
 
   resp.success = true;
   resp.message = "Current state is: " + m_safety_sm.toString();
-  if (m_safety_sm.isIdle()) { 
-    m_position_hold = m_carrot_trajectory; 
+  if (m_safety_sm.isIdle()) {
+    m_position_hold = m_carrot_trajectory;
 
     std_srvs::Empty position_hold_srv;
-    auto response = m_position_hold_client.call(position_hold_srv);
-    if (!response)
-    {
+    auto            response = m_position_hold_client.call(position_hold_srv);
+    if (!response) {
       ROS_FATAL("[UAVSafetyNode] unable to call position hold.");
       return true;
     }
@@ -345,9 +350,8 @@ bool UavSafetyNode::safety_override_cb(std_srvs::SetBool::Request&  req,
 void UavSafetyNode::position_hold_cb(
   const trajectory_msgs::MultiDOFJointTrajectoryPoint& msg)
 {
- 
-  if (msg.transforms.empty())
-  {
+
+  if (msg.transforms.empty()) {
     ROS_FATAL("[UavSafetyNode] INVALID REFERENCE RECIEVED");
     return;
   }
